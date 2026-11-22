@@ -1,0 +1,19 @@
+<mxfile host="Electron">
+  <diagram name="Page-1" id="zffxveubzrkXwiIwPwRs">
+    <mxGraphModel dx="1030" dy="660" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="VlrRvo8Ws_A9_9zlPMJc-3" edge="1" parent="1" source="VlrRvo8Ws_A9_9zlPMJc-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;defaultLabelBackgroundColor=page;labelPadding=0 4;" target="VlrRvo8Ws_A9_9zlPMJc-2" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="VlrRvo8Ws_A9_9zlPMJc-1" parent="1" style="strokeWidth=2;html=1;shape=mxgraph.flowchart.terminator;whiteSpace=wrap;" value="Mulai" vertex="1">
+          <mxGeometry height="60" width="100" x="360" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="VlrRvo8Ws_A9_9zlPMJc-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;strokeWidth=2;" value="Open File CSV" vertex="1">
+          <mxGeometry height="60" width="120" x="350" y="130" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
