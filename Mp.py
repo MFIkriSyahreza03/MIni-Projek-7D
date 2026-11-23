@@ -47,3 +47,21 @@ def login():
         print(f"  ! Username/password salah. Sisa percobaan: {sisa}\n")
     print("Login gagal. Program ditutup.")
     return False
+def ke_float(teks):
+    """Terima desimal koma (0,33) maupun titik (0.33)."""
+    return float(str(teks).strip().replace(",", "."))
+def muat_data(path):
+    """Baca CSV -> list of dict berisi nilai gizi per 100 g + hasil SNI."""
+    if not os.path.exists(path):
+        sys.exit(f"File '{path}' tidak ditemukan di folder program.")
+
+    with open(path, encoding="utf-8-sig") as f:
+        header = f.readline()
+        pemisah = max(",;\t", key=header.count)     
+        f.seek(0)
+        pembaca = csv.DictReader(f, delimiter=pemisah)
+        pembaca.fieldnames = [(k or "").strip().lower() for k in pembaca.fieldnames]
+        hilang = [k for k in ["name", "weight", *KRITERIA] if k not in pembaca.fieldnames]
+        if hilang:
+            sys.exit("Kolom wajib tidak ada di CSV: " + ", ".join(hilang)
+                     + "\nKolom yang terbaca: " + ", ".join(pembaca.fieldnames))
