@@ -137,3 +137,79 @@ def menu_pemeriksaan(data):
                 if p["gagal"]:
                     print(f"  - {p['name']}: {'; '.join(p['gagal'])}")
     tunggu()
+def bobot_ahp(urutan):
+    """Matriks Saaty dari urutan prioritas (selisih peringkat -> skala 1-9).
+    Return: (bobot per kriteria, CR)."""
+    n = len(urutan)
+    mat = [[1 if i == j else min(9, 1 + j - i) if i < j else 1 / min(9, 1 + i - j)
+            for j in range(n)] for i in range(n)]
+    jml = [sum(baris[j] for baris in mat) for j in range(n)]
+    w = [sum(mat[i][j] / jml[j] for j in range(n)) / n for i in range(n)]
+    lam = sum(sum(mat[i][j] * w[j] for j in range(n)) / w[i] for i in range(n)) / n
+    cr = (lam - n) / (n - 1) / RI[n] if RI[n] else 0
+    return dict(zip(urutan, w)), cr
+
+
+def hitung_saw(data, bobot):
+    """Normalisasi SAW + skor terbobot. Return [(skor, produk)] terurut."""
+    ekstrem = {k: (min(p[k] for p in data), max(p[k] for p in data)) for k in bobot}
+
+    def normal(k, x):
+        lo, hi = ekstrem[k]
+        if KRITERIA[k][2] == "benefit":
+            return x / hi if hi > 0 else 0
+        return lo / x if lo > 0 else (lo + 1) / (x + 1)   # +1 bila ada nilai 0
+
+    hasil = [(sum(w * normal(k, p[k]) for k, w in bobot.items()), p) for p in data]
+    return sorted(hasil, key=lambda h: round(h[0], 4), reverse=True)
+
+
+# ========================= MENU 3: REKOMENDASI =========================
+def menu_rekomendasi(data):
+    judul("REKOMENDASI SEREAL (AHP - SAW)")
+    cand = [p for p in data if not p["gagal"]]
+    if len(cand) < 5:
+        print("Kandidat yang lolos kurang dari 5 produk.")
+        return tunggu()
+    print(f"Kandidat yang lolos pemeriksaan acuan: {len(cand)} produk\n")
+
+    daftar = list(KRITERIA)
+    print("Pilih kriteria yang ingin diprioritaskan:")
+    for i, k in enumerate(daftar, 1):
+        lab, _, jenis = KRITERIA[k]
+        print(f"  {i}. {lab:<12} (makin "
+              f"{'tinggi' if jenis == 'benefit' else 'rendah'} makin baik)")
+
+    while True:
+        try:
+            idx = [int(x) for x in input(
+                "\nMasukkan nomor kriteria dipisah koma (min 2, contoh 1,2,4): "
+            ).replace(" ", "").split(",") if x]
+        except ValueError:
+            idx = []
+        if len(idx) >= 2 and len(set(idx)) == len(idx) \
+                and all(1 <= x <= len(daftar) for x in idx):
+            break
+        print("  ! Pilih minimal 2 nomor berbeda yang valid.")
+
+    sisa, urutan = [daftar[i - 1] for i in idx], []
+    print("\nUrutkan kriteria dari yang PALING penting.")
+    while len(sisa) > 1:
+        print(f"\nPeringkat {len(urutan) + 1}, pilih dari:")
+        urutan.append(sisa.pop(sisa.index(pilih(sisa, lambda k: KRITERIA[k][0]))))
+    urutan += sisa
+
+    bobot, cr = bobot_ahp(urutan)
+    print("\n--- Bobot Kriteria (AHP) ---")
+    for k, w in bobot.items():
+        print(f"  {KRITERIA[k][0]:<12}: {w:.4f}  ({w * 100:.1f}%)")
+    print(f"  CR = {cr:.4f} -> "
+          f"{'KONSISTEN (CR < 0.1)' if cr < 0.1 else 'TIDAK konsisten (CR >= 0.1)'}")
+
+    top = hitung_saw(cand, bobot)[:5]
+    print("\n--- TOP 5 Rekomendasi Sereal (SAW) ---")
+    cetak_tabel([p for _, p in top], list(bobot), skor=[s for s, _ in top])
+    print("\nNilai kriteria dalam satuan per 100 gram."
+          f"\nTerbaik: {top[0][1]['name']} (skor {top[0][0]:.4f})")
+    tunggu()
+
