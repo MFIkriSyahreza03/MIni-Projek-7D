@@ -77,7 +77,6 @@ def muat_data(path):
                 continue
             produk = {"name": baris["name"].strip()}
             produk.update({k: round(v / gram * 100, 2) for k, v in gizi.items()})
-            # Pemeriksaan acuan SNI -> daftar alasan gagal (kosong = lolos)
             produk["gagal"] = [f"{KRITERIA[k][0]} {produk[k]:g} g < min {m} g"
                                for k, m in SNI_MIN.items() if produk[k] < m]
             data.append(produk)
@@ -96,7 +95,6 @@ def pilih_produk(data, label):
             print("  Ditemukan beberapa produk:")
             return pilih(hasil, lambda p: p["name"])
         print("  ! Tidak ditemukan, coba kata lain.")
-# ============================ MENU 1: DATA ============================
 def menu_lihat_data(data):
     judul("DATA SEREAL (per 100 gram)")
     print(f"Jumlah produk valid: {len(data)}\n")
@@ -109,7 +107,7 @@ def menu_lihat_data(data):
                 "ENTER = halaman berikutnya, Q = kembali: ").strip().lower() == "q":
             break
     tunggu()
-# ======================== MENU 2: PEMERIKSAAN GIZI ========================
+
 def menu_pemeriksaan(data):
     judul("PEMERIKSAAN KANDUNGAN GIZI")
     print("Batas acuan SNI 01-4270-1996 (per 100 g):")
@@ -163,8 +161,6 @@ def hitung_saw(data, bobot):
     hasil = [(sum(w * normal(k, p[k]) for k, w in bobot.items()), p) for p in data]
     return sorted(hasil, key=lambda h: round(h[0], 4), reverse=True)
 
-
-# ========================= MENU 3: REKOMENDASI =========================
 def menu_rekomendasi(data):
     judul("REKOMENDASI SEREAL (AHP - SAW)")
     cand = [p for p in data if not p["gagal"]]
@@ -212,4 +208,3 @@ def menu_rekomendasi(data):
     print("\nNilai kriteria dalam satuan per 100 gram."
           f"\nTerbaik: {top[0][1]['name']} (skor {top[0][0]:.4f})")
     tunggu()
-
