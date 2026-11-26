@@ -1,6 +1,7 @@
 import csv
 import os
 import sys
+
 FILE_CSV = "cereal.csv"
 GRAM_PER_OZ = 28.3495                      
 USERS = {"admin": "admin123", "kelompok7d": "mini2026"}
@@ -14,6 +15,7 @@ KRITERIA = {"protein":  ("Protein", "g", "benefit"),
 BANDING = ["protein", "carbo", "fiber"]     
 TABEL = ["calories", "protein", "fat", "fiber", "carbo"]
 RI = {2: 0, 3: 0.58, 4: 0.90, 5: 1.12}      
+
 def judul(teks):
     print(f"\n{'=' * 64}\n{teks:^64}\n{'=' * 64}")
 
@@ -169,7 +171,7 @@ def hitung_saw(data, bobot):
         lo, hi = ekstrem[k]
         if KRITERIA[k][2] == "benefit":
             return x / hi if hi > 0 else 0
-        return lo / x if lo > 0 else (lo + 1) / (x + 1)   # +1 bila ada nilai 0
+        return lo / x if lo > 0 else (lo + 1) / (x + 1)   
 
     hasil = [(sum(w * normal(k, p[k]) for k, w in bobot.items()), p) for p in data]
     return sorted(hasil, key=lambda h: round(h[0], 4), reverse=True)
