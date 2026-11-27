@@ -1,19 +1,18 @@
-print("=" * 65)
-print("MINI PROJECT PROGRAMA KOMPUTER".center(70))
-print("=" * 65)
+print("=" * 70)
+print("MINI PROJECT".center(70))
+print("PEMROGRAMAN KOMPUTER".center(70))
+print("=" * 70)
 
-print("" \
-"ANALISIS DAN REKOMENDASI PEMILIHAN SEREAL SARAPAN".center(70))
+print("ANALISIS DAN REKOMENDASI PEMILIHAN SEREAL SARAPAN".center(70))
 print("BERDASARKAN KANDUNGAN GIZI MENGGUNAKAN METODE AHP-SAW.".center(70))
 
-print("\n" + "=" * 65)
+print("Oleh:".center(70))
 print("KELOMPOK 7D".center(70))
-print("=" * 65)
-
+print()
 print("Anggota Kelompok:".center(70))
 print("1. Aprilia Putri Rawi          2610931020".center(70))
 print("2. Raffi Raditia               2610933021".center(70))
-print("3. Muhammad Fikri Syahreza    2610933041".center(70))
+print("3. Muhammad Fikri Syahreza     2610933041".center(70))
 print("4. Azka Zalila Raisa           2610937003".center(70))
 print()
 print("Asisten Pembimbing:".center(70))
@@ -21,12 +20,14 @@ print("Anisha Nur Aprilia".center(70))
 print()
 print("Dosen Pengampu:".center(70))
 print("Ikhwan Arief, S.T., M.Sc.".center(70))
+print()
 
-print("\n" + "=" * 65)
+
 print("LABORATORIUM SISTEM INFORMASI DAN KEPUTUSAN".center(70))
 print("DEPARTEMEN TEKNIK INDUSTRI".center(70))
 print("FAKULTAS TEKNIK".center(70))
 print("UNIVERSITAS ANDALAS".center(70))
+print("2026".center(70))
 
 import csv
 import os
