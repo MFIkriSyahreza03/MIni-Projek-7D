@@ -1,3 +1,33 @@
+print("=" * 65)
+print("MINI PROJECT PROGRAMA KOMPUTER".center(70))
+print("=" * 65)
+
+print("" \
+"ANALISIS DAN REKOMENDASI PEMILIHAN SEREAL SARAPAN".center(70))
+print("BERDASARKAN KANDUNGAN GIZI MENGGUNAKAN METODE AHP-SAW.".center(70))
+
+print("\n" + "=" * 65)
+print("KELOMPOK 7D".center(70))
+print("=" * 65)
+
+print("Anggota Kelompok:".center(70))
+print("1. Aprilia Putri Rawi          2610931020".center(70))
+print("2. Raffi Raditia               2610933021".center(70))
+print("3. Muhammad Fikri Syahreza    2610933041".center(70))
+print("4. Azka Zalila Raisa           2610937003".center(70))
+print()
+print("Asisten Pembimbing:".center(70))
+print("Anisha Nur Aprilia".center(70))
+print()
+print("Dosen Pengampu:".center(70))
+print("Ikhwan Arief, S.T., M.Sc.".center(70))
+
+print("\n" + "=" * 65)
+print("LABORATORIUM SISTEM INFORMASI DAN KEPUTUSAN".center(70))
+print("DEPARTEMEN TEKNIK INDUSTRI".center(70))
+print("FAKULTAS TEKNIK".center(70))
+print("UNIVERSITAS ANDALAS".center(70))
+
 import csv
 import os
 import sys
@@ -5,7 +35,6 @@ import sys
 FILE_CSV = "cereal.csv"
 GRAM_PER_OZ = 28.3495                      
 USERS = {"admin": "admin123", "kelompok7d": "mini2026"}
-MAKS_LOGIN = 3
 SNI_MIN = {"protein": 5, "carbo": 60}
 KRITERIA = {"protein":  ("Protein", "g", "benefit"),
     "fiber":    ("Serat", "g", "benefit"),
@@ -56,33 +85,38 @@ class Tampilan:
         return daftar[Tampilan.minta_angka(prompt, 1, len(daftar)) - 1]
 
     def cetak_tabel(produk, kolom, mulai=1, skor=None):
-        t = Tabel(["No", "Nama"] + [KRITERIA[k][0] for k in kolom] + (["Skor"] if skor else []),
-                  "<<" + ">" * (len(kolom) + bool(skor)))
+        t = Tabel(["No", "Nama"] + (["Peringkat"] if skor else [])
+                  + [KRITERIA[k][0] for k in kolom] + (["Skor"] if skor else []),
+                  "<<" + ("^" if skor else "") + ">" * (len(kolom) + bool(skor)))
         for i, p in enumerate(produk):
-            t.tambah(mulai + i, p["name"][:27], *[f"{p[k]:.2f}" for k in kolom],
+            # produk sudah terurut dari skor tertinggi -> peringkat berurutan 1, 2, 3, ...
+            t.tambah(mulai + i, p["name"][:27], *([i + 1] if skor else []),
+                     *[f"{p[k]:.2f}" for k in kolom],
                      *([f"{skor[i]:.4f}"] if skor else []))
         t.cetak()
 
 
 class Autentikasi:
-    """Login pengguna."""
+    """Login tanpa batas percobaan (diulang sampai berhasil atau dibatalkan)."""
+
+    @staticmethod
     def login():
         Tampilan.judul("LOGIN SISTEM REKOMENDASI SEREAL")
-        for _ in range(MAKS_LOGIN):
+        while True:
             try:
                 user = input("Username : ").strip()
                 pw = input("Password : ").strip()
-                if USERS[user] == pw:          # KeyError jika username tidak ada
-                    print(f"\nLogin berhasil. Selamat datang, {user}!")
-                    return True
-                print("  ! Password salah. Silakan coba lagi.\n")
+                if USERS[user] != pw:        # KeyError otomatis bila username tidak ada
+                    raise ValueError("password salah")
+                print(f"\nLogin berhasil. Selamat datang, {user}!")
+                return True
             except KeyError:
                 print("  ! Username tidak terdaftar. Silakan coba lagi.\n")
+            except ValueError:
+                print("  ! Password salah. Silakan coba lagi.\n")
             except (KeyboardInterrupt, EOFError):
                 print("\nLogin dibatalkan. Program ditutup.")
                 return False
-        print("Batas percobaan login habis. Program ditutup.")
-        return False
 
 
 class RepositoriSereal:
@@ -298,9 +332,15 @@ class Perbandingan:
             print("! Produk kedua harus berbeda dari produk pertama.")
             b = RepositoriSereal.pilih_produk(data, "sereal kedua")
         print("\nPerbandingan kandungan gizi per 100 gram:")
-        t = Tabel(["Parameter", a["name"][:20], b["name"][:20]], "<>>")
+        t = Tabel(["Parameter", a["name"][:20], "Peringkat", b["name"][:20], "Peringkat"],
+                  "<>^>^")
         for k in param:
-            t.tambah(f"{KRITERIA[k][0]} ({KRITERIA[k][1]})", a[k], b[k])
+            if a[k] == b[k]:
+                rank_a = rank_b = 1                          # seri -> sama-sama peringkat 1
+            else:
+                a_unggul = (a[k] > b[k]) if KRITERIA[k][2] == "benefit" else (a[k] < b[k])
+                rank_a, rank_b = (1, 2) if a_unggul else (2, 1)
+            t.tambah(f"{KRITERIA[k][0]} ({KRITERIA[k][1]})", a[k], rank_a, b[k], rank_b)
         t.cetak()
         skor_a = 0
         skor_b = 0
